@@ -121,6 +121,125 @@ button:hover {
   0% { transform: scale(0.5); opacity: 0; }
   100% { transform: scale(1); opacity: 1; }
 }
+/* Love notes / envelopes */
+.notes {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+  margin: 25px 0;
+}
+
+.envelope {
+  width: 70px;
+  height: 50px;
+  background: rgba(255,255,255,0.25);
+  border-radius: 10px;
+  position: relative;
+  cursor: pointer;
+  transition: transform 0.3s, box-shadow 0.3s;
+  overflow: hidden;
+}
+
+.envelope:hover {
+  transform: translateY(-5px) scale(1.05);
+  box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+}
+
+/* Envelope flap */
+.envelope::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(255,255,255,0.4);
+  clip-path: polygon(0 0, 50% 45%, 100% 0);
+  transform-origin: top center;
+  transition: transform 0.5s ease;
+}
+
+/* Open state */
+.envelope.open::before {
+  transform: rotateX(180deg);
+}
+
+
+/* Overlay */
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.5);
+  display: none;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+/* Center note */
+.note {
+  background: rgba(255,255,255,0.25);
+  backdrop-filter: blur(12px);
+  border-radius: 20px;
+  padding: 25px;
+  max-width: 320px;
+  text-align: center;
+  font-size: 1.05em;
+  line-height: 1.6;
+  animation: pop 0.4s ease;
+}
+/* Love letter heart */
+.love-letter {
+  margin-bottom: 25px;
+}
+
+.heart-button {
+  font-size: 48px;
+  cursor: pointer;
+  animation: pulse 1.5s infinite;
+  display: inline-block;
+  transition: transform 0.4s ease;
+}
+
+.heart-button.open {
+  animation: none;
+  transform: scale(0);
+}
+
+/* Hidden text */
+#letterText {
+  display: none;
+  margin-top: 20px;
+  animation: fadeIn 0.8s ease;
+}
+/* Heart wrapper */
+.heart-wrapper {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* Click hint text */
+.click-hint {
+  margin-top: 6px;
+  font-size: 0.8em;
+  opacity: 0.8;
+  animation: hintPulse 1.8s infinite;
+  letter-spacing: 1px;
+}
+
+/* Hint animation */
+@keyframes hintPulse {
+  0% { opacity: 0.4; transform: translateY(0); }
+  50% { opacity: 1; transform: translateY(-4px); }
+  100% { opacity: 0.4; transform: translateY(0); }
+}
+/* Heart pulse */
+@keyframes pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.25); }
+  100% { transform: scale(1); }
+}
 </style>
 </head>
 
@@ -130,17 +249,35 @@ button:hover {
   <div class="card">
     <h1>Liel 💖</h1>
 
-    <p>
-      Every moment with you means more than I can explain.  
-      So I made this little corner of the internet just for us.
-    </p>
+   <!-- Hidden love letter -->
+<div class="love-letter">
+  <div class="heart-wrapper">
+  <div class="heart-button" onclick="openLetter()">❤️</div>
+  <div id="clickHint" class="click-hint">click me</div>
+</div>
+
+  <p id="letterText">
+    Each moment with you feels like a dream come true. I love everything about you.
+    Your smile, your laugh, your smell, your touch, your hair, your eyes, your voice
+    and I could go on.
+    <br><br>
+    Thank you for always sticking by my side.
+    I can't wait to make more memories together.
+    <br><br>
+    I hope you will choose me to be your Valentine :)
+  </p>
+</div>
+
 
     <!-- Image gallery -->
     <div class="gallery">
-      <img src="img1.jpg" alt="Us">
-      <img src="img2.jpg" alt="Us">
-      <img src="img3.jpg" alt="Us">
-    </div>
+  <img src="img1.jpg" alt="Us">
+  <img src="img2.jpg" alt="Us">
+  <img src="img3.jpg" alt="Us">
+  <img src="img4.jpg" alt="Us">
+  <img src="img5.jpg" alt="Us">
+  <img src="img6.jpg" alt="Us">
+</div>
 
     <h1>Will you be my Valentine? 💌</h1>
 
@@ -148,12 +285,22 @@ button:hover {
     <button onclick="sayYes()">ALWAYS 😍</button>
 
     <div id="yesMessage">
-      Best choice ever ❤️  
-      I can’t wait to celebrate with you.
+      WOWWWWWWWWWWWWW YAYYYYY
+      SMART CHOICE, I LOVE YOU SO MUCH! 
     </div>
   </div>
 </div>
+<!-- Love notes -->
+<div class="notes">
+  <div class="envelope" onclick="openNote(1)"></div>
+  <div class="envelope" onclick="openNote(2)"></div>
+  <div class="envelope" onclick="openNote(3)"></div>
+</div>
 
+<!-- Note overlay -->
+<div id="overlay" class="overlay" onclick="closeNote()">
+  <div id="noteText" class="note"></div>
+</div>
 <script>
 function sayYes() {
   document.getElementById("yesMessage").style.display = "block";
@@ -171,6 +318,47 @@ function createHearts() {
 
     setTimeout(() => heart.remove(), 6000);
   }
+}
+const notes = {
+  1: "To much more Goodnightos kolstapos and hugs",
+  2: "היי אני מקס וזאת ליאל, ביחד אנחנו.... מקס וליאלללללל",
+  3: "I love you."
+};
+
+function openNote(number) {
+  const envelope = event.currentTarget;
+  envelope.classList.add("open");
+
+  document.getElementById("noteText").innerText = notes[number];
+  document.getElementById("overlay").style.display = "flex";
+}
+
+function closeNote() {
+  document.getElementById("overlay").style.display = "none";
+}
+function openLetter() {
+  const heart = document.querySelector(".heart-button");
+  const text = document.getElementById("letterText");
+
+  heart.classList.add("open");
+
+  setTimeout(() => {
+    heart.style.display = "none";
+    text.style.display = "block";
+  }, 400);
+}
+function openLetter() {
+  const heart = document.querySelector(".heart-button");
+  const text = document.getElementById("letterText");
+  const hint = document.getElementById("clickHint");
+
+  heart.classList.add("open");
+  hint.style.display = "none";
+
+  setTimeout(() => {
+    heart.style.display = "none";
+    text.style.display = "block";
+  }, 400);
 }
 </script>
 
