@@ -206,6 +206,45 @@ button:hover {
 @keyframes hintPulse { 0% { opacity: 0.4; transform: translateY(0); } 50% { opacity: 1; transform: translateY(-4px); } 100% { opacity: 0.4; transform: translateY(0); } }
 
 @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.25); } 100% { transform: scale(1); } }
+
+/* Memory game */
+#memoryGame {
+  margin-top: 40px;
+  text-align: center;
+}
+
+.memory-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 80px);
+  gap: 15px;
+  justify-content: center;
+  margin-top: 20px;
+}
+
+.memory-card {
+  width: 80px;
+  height: 80px;
+  background-color: rgba(255,255,255,0.25);
+  border-radius: 12px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 40px;
+  color: transparent;
+  transition: transform 0.3s, background 0.3s;
+}
+
+.memory-card.flipped {
+  color: white;
+  background-color: rgba(255,255,255,0.45);
+}
+
+#memoryMessage {
+  font-size: 1.2em;
+  margin-top: 15px;
+  display: none;
+}
 </style>
 </head>
 
@@ -245,6 +284,14 @@ button:hover {
       WOWWWWWWWWWWWWW YAYYYYY
       SMART CHOICE, I LOVE YOU SO MUCH! 
     </div>
+
+    <!-- Memory Game -->
+    <div id="memoryGame">
+      <h2>💌 Memory Game 💌</h2>
+      <p>Match the love emojis!</p>
+      <div class="memory-grid" id="memoryGrid"></div>
+      <div id="memoryMessage">🎉 Good Job Lielush :) 🎉</div>
+    </div>
   </div>
 </div>
 
@@ -269,15 +316,15 @@ const notes = {
 
 let cryingInterval;
 
+// Yes/No buttons
 function sayYes() {
   document.getElementById("yesMessage").style.display = "block";
   createHearts();
   createConfetti();
-  clearInterval(cryingInterval); // stop crying emojis
+  clearInterval(cryingInterval);
 }
 
 function sayNo() {
-  // Start generating crying emojis every 500ms
   cryingInterval = setInterval(() => {
     const cry = document.createElement("div");
     cry.className = "crying-heart";
@@ -302,7 +349,7 @@ function createHearts() {
   }
 }
 
-// Confetti effect
+// Confetti
 function createConfetti() {
   for (let i = 0; i < 50; i++) {
     const confetti = document.createElement("div");
@@ -364,6 +411,65 @@ document.addEventListener("mousemove", (e) => {
   document.body.appendChild(heart);
   setTimeout(() => heart.remove(), 2000);
 });
+
+/* --- Memory Game --- */
+const cardSymbols = ['💖','💖','😍','😍','🥰','🥰','😂','😂'];
+let firstCard = null;
+let secondCard = null;
+let lockBoard = false;
+let matches = 0;
+
+function initMemoryGame() {
+  const grid = document.getElementById('memoryGrid');
+  const shuffled = cardSymbols.sort(() => 0.5 - Math.random());
+  grid.innerHTML = '';
+  shuffled.forEach(symbol => {
+    const card = document.createElement('div');
+    card.className = 'memory-card';
+    card.dataset.symbol = symbol;
+    card.innerText = symbol;
+    card.addEventListener('click', flipCard);
+    grid.appendChild(card);
+  });
+}
+
+function flipCard(e) {
+  if (lockBoard) return;
+  const card = e.currentTarget;
+  if (card === firstCard) return;
+  
+  card.classList.add('flipped');
+
+  if (!firstCard) {
+    firstCard = card;
+    return;
+  }
+
+  secondCard = card;
+
+  if (firstCard.dataset.symbol === secondCard.dataset.symbol) {
+    matches += 1;
+    resetCards();
+    if (matches === cardSymbols.length/2) {
+      document.getElementById('memoryMessage').style.display = 'block';
+      createConfetti();
+    }
+  } else {
+    lockBoard = true;
+    setTimeout(() => {
+      firstCard.classList.remove('flipped');
+      secondCard.classList.remove('flipped');
+      resetCards();
+    }, 800);
+  }
+}
+
+function resetCards() {
+  [firstCard, secondCard] = [null, null];
+  lockBoard = false;
+}
+
+initMemoryGame();
 </script>
 
 </body>
