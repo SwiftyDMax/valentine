@@ -19,8 +19,8 @@ body {
   position: relative;
 }
 
-/* Floating hearts */
-.heart, .floating-heart {
+/* Floating hearts and crying emoji */
+.heart, .floating-heart, .crying-heart {
   position: fixed;
   bottom: -20px;
   font-size: 20px;
@@ -206,7 +206,6 @@ button:hover {
 @keyframes hintPulse { 0% { opacity: 0.4; transform: translateY(0); } 50% { opacity: 1; transform: translateY(-4px); } 100% { opacity: 0.4; transform: translateY(0); } }
 
 @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.25); } 100% { transform: scale(1); } }
-
 </style>
 </head>
 
@@ -224,7 +223,6 @@ button:hover {
         <div class="heart-button" onclick="openLetter()">❤️</div>
         <div id="clickHint" class="click-hint">click me</div>
       </div>
-
       <p id="letterText"></p>
     </div>
 
@@ -241,7 +239,7 @@ button:hover {
     <h1>Will you be my Valentine? 💌</h1>
 
     <button onclick="sayYes()">YES 💕</button>
-    <button onclick="sayYes()">No</button>
+    <button onclick="sayNo()">No 😢</button>
 
     <div id="yesMessage">
       WOWWWWWWWWWWWWW YAYYYYY
@@ -269,12 +267,29 @@ const notes = {
   3: "I love you."
 };
 
+let cryingInterval;
+
 function sayYes() {
   document.getElementById("yesMessage").style.display = "block";
   createHearts();
   createConfetti();
+  clearInterval(cryingInterval); // stop crying emojis
 }
 
+function sayNo() {
+  // Start generating crying emojis every 500ms
+  cryingInterval = setInterval(() => {
+    const cry = document.createElement("div");
+    cry.className = "crying-heart";
+    cry.innerText = "😢";
+    cry.style.left = Math.random() * 100 + "vw";
+    cry.style.fontSize = 20 + Math.random()*20 + "px";
+    document.body.appendChild(cry);
+    setTimeout(() => cry.remove(), 6000);
+  }, 500);
+}
+
+// Floating hearts
 function createHearts() {
   for (let i = 0; i < 20; i++) {
     const heart = document.createElement("div");
