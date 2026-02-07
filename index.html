@@ -7,9 +7,7 @@
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600&family=Poppins:wght@300;400;600&display=swap');
 
-* {
-  box-sizing: border-box;
-}
+* { box-sizing: border-box; }
 
 body {
   margin: 0;
@@ -18,15 +16,17 @@ body {
   background: linear-gradient(135deg, #ff758c, #ff7eb3);
   overflow-x: hidden;
   color: #fff;
+  position: relative;
 }
 
 /* Floating hearts */
-.heart {
+.heart, .floating-heart {
   position: fixed;
   bottom: -20px;
   font-size: 20px;
   animation: floatUp 6s linear infinite;
   opacity: 0.8;
+  pointer-events: none;
 }
 
 @keyframes floatUp {
@@ -34,13 +34,24 @@ body {
   100% { transform: translateY(-110vh) scale(1.5); opacity: 0; }
 }
 
-/* Card */
-.container {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  padding: 30px;
+/* Confetti */
+.confetti-piece {
+  position: fixed;
+  width: 10px;
+  height: 10px;
+  background-color: #ff4b2b;
+  opacity: 0.8;
+  pointer-events: none;
+  animation: confettiFall 3s linear forwards;
 }
+
+@keyframes confettiFall {
+  0% { transform: translateY(0) rotate(0deg); opacity: 1; }
+  100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
+}
+
+/* Card */
+.container { display: flex; justify-content: center; align-items: center; padding: 30px; }
 
 .card {
   background: rgba(255,255,255,0.15);
@@ -54,24 +65,17 @@ body {
   box-shadow: 0 20px 40px rgba(0,0,0,0.25);
 }
 
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(30px); }
-  to { opacity: 1; transform: translateY(0); }
-}
+@keyframes fadeIn { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
 
 h1 {
   font-family: 'Playfair Display', serif;
   font-size: 2.4em;
   margin-bottom: 10px;
+  text-shadow: 0 0 10px #ffb6c1;
 }
 
-p {
-  font-size: 1.05em;
-  margin-bottom: 25px;
-  line-height: 1.6;
-}
+p { font-size: 1.05em; margin-bottom: 25px; line-height: 1.6; text-align: justify; }
 
-/* Images */
 .gallery {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -85,6 +89,7 @@ p {
   object-fit: cover;
   border-radius: 15px;
   transition: transform 0.3s, box-shadow 0.3s;
+  cursor: pointer;
 }
 
 .gallery img:hover {
@@ -92,7 +97,6 @@ p {
   box-shadow: 0 10px 25px rgba(0,0,0,0.3);
 }
 
-/* Buttons */
 button {
   background: linear-gradient(135deg, #ff416c, #ff4b2b);
   border: none;
@@ -103,11 +107,12 @@ button {
   color: white;
   cursor: pointer;
   transition: transform 0.25s, box-shadow 0.25s;
+  box-shadow: 0 0 15px #ff4b2b;
 }
 
 button:hover {
   transform: scale(1.15);
-  box-shadow: 0 10px 25px rgba(0,0,0,0.35);
+  box-shadow: 0 0 30px #ff416c;
 }
 
 #yesMessage {
@@ -121,17 +126,11 @@ button:hover {
   0% { transform: scale(0.5); opacity: 0; }
   100% { transform: scale(1); opacity: 1; }
 }
-/* Love notes / envelopes */
-.notes {
-  display: flex;
-  justify-content: center;
-  gap: 15px;
-  margin: 25px 0;
-}
+
+.notes { display: flex; justify-content: center; gap: 15px; margin: 25px 0; }
 
 .envelope {
-  width: 70px;
-  height: 50px;
+  width: 70px; height: 50px;
   background: rgba(255,255,255,0.25);
   border-radius: 10px;
   position: relative;
@@ -140,35 +139,23 @@ button:hover {
   overflow: hidden;
 }
 
-.envelope:hover {
-  transform: translateY(-5px) scale(1.05);
-  box-shadow: 0 10px 20px rgba(0,0,0,0.3);
-}
+.envelope:hover { transform: translateY(-5px) scale(1.05); box-shadow: 0 10px 20px rgba(0,0,0,0.3); }
 
-/* Envelope flap */
 .envelope::before {
   content: "";
   position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
   background: rgba(255,255,255,0.4);
   clip-path: polygon(0 0, 50% 45%, 100% 0);
   transform-origin: top center;
   transition: transform 0.5s ease;
 }
 
-/* Open state */
-.envelope.open::before {
-  transform: rotateX(180deg);
-}
+.envelope.open::before { transform: rotateX(180deg); }
 
-
-/* Overlay */
 .overlay {
-  position: fixed;
-  inset: 0;
+  position: fixed; inset: 0;
   background: rgba(0,0,0,0.5);
   display: none;
   justify-content: center;
@@ -176,7 +163,6 @@ button:hover {
   z-index: 1000;
 }
 
-/* Center note */
 .note {
   background: rgba(255,255,255,0.25);
   backdrop-filter: blur(12px);
@@ -188,10 +174,8 @@ button:hover {
   line-height: 1.6;
   animation: pop 0.4s ease;
 }
-/* Love letter heart */
-.love-letter {
-  margin-bottom: 25px;
-}
+
+.love-letter { margin-bottom: 25px; }
 
 .heart-button {
   font-size: 48px;
@@ -201,25 +185,16 @@ button:hover {
   transition: transform 0.4s ease;
 }
 
-.heart-button.open {
-  animation: none;
-  transform: scale(0);
-}
+.heart-button.open { animation: none; transform: scale(0); }
 
-/* Hidden text */
 #letterText {
   display: none;
   margin-top: 20px;
-  animation: fadeIn 0.8s ease;
-}
-/* Heart wrapper */
-.heart-wrapper {
-  display: inline-flex;
-  flex-direction: column;
-  align-items: center;
+  text-align: center;
 }
 
-/* Click hint text */
+.heart-wrapper { display: inline-flex; flex-direction: column; align-items: center; }
+
 .click-hint {
   margin-top: 6px;
   font-size: 0.8em;
@@ -228,61 +203,45 @@ button:hover {
   letter-spacing: 1px;
 }
 
-/* Hint animation */
-@keyframes hintPulse {
-  0% { opacity: 0.4; transform: translateY(0); }
-  50% { opacity: 1; transform: translateY(-4px); }
-  100% { opacity: 0.4; transform: translateY(0); }
-}
-/* Heart pulse */
-@keyframes pulse {
-  0% { transform: scale(1); }
-  50% { transform: scale(1.25); }
-  100% { transform: scale(1); }
-}
+@keyframes hintPulse { 0% { opacity: 0.4; transform: translateY(0); } 50% { opacity: 1; transform: translateY(-4px); } 100% { opacity: 0.4; transform: translateY(0); } }
+
+@keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.25); } 100% { transform: scale(1); } }
+
 </style>
 </head>
 
 <body>
 
+<audio id="bgMusic" src="https://www.bensound.com/bensound-music/bensound-romantic.mp3" autoplay loop></audio>
+
 <div class="container">
   <div class="card">
     <h1>Liel 💖</h1>
 
-   <!-- Hidden love letter -->
-<div class="love-letter">
-  <div class="heart-wrapper">
-  <div class="heart-button" onclick="openLetter()">❤️</div>
-  <div id="clickHint" class="click-hint">click me</div>
-</div>
+    <!-- Hidden love letter -->
+    <div class="love-letter">
+      <div class="heart-wrapper">
+        <div class="heart-button" onclick="openLetter()">❤️</div>
+        <div id="clickHint" class="click-hint">click me</div>
+      </div>
 
-  <p id="letterText">
-    Each moment with you feels like a dream come true. I love everything about you.
-    Your smile, your laugh, your smell, your touch, your hair, your eyes, your voice
-    and I could go on.
-    <br><br>
-    Thank you for always sticking by my side.
-    I can't wait to make more memories together.
-    <br><br>
-    I hope you will choose me to be your Valentine :)
-  </p>
-</div>
-
+      <p id="letterText"></p>
+    </div>
 
     <!-- Image gallery -->
     <div class="gallery">
-  <img src="img1.jpg" alt="Us">
-  <img src="img2.jpg" alt="Us">
-  <img src="img3.jpg" alt="Us">
-  <img src="img4.jpg" alt="Us">
-  <img src="img5.jpg" alt="Us">
-  <img src="img6.jpg" alt="Us">
-</div>
+      <img src="img1.jpg" alt="Us" onclick="showImageNote('Our first date 💕')">
+      <img src="img2.jpg" alt="Us" onclick="showImageNote('Your smile 😍')">
+      <img src="img3.jpg" alt="Us" onclick="showImageNote('Memorable trip ✈️')">
+      <img src="img4.jpg" alt="Us" onclick="showImageNote('Cuddles 🥰')">
+      <img src="img5.jpg" alt="Us" onclick="showImageNote('Your laugh 😂')">
+      <img src="img6.jpg" alt="Us" onclick="showImageNote('Forever us ❤️')">
+    </div>
 
     <h1>Will you be my Valentine? 💌</h1>
 
     <button onclick="sayYes()">YES 💕</button>
-    <button onclick="sayYes()">ALWAYS 😍</button>
+    <button onclick="sayYes()">No</button>
 
     <div id="yesMessage">
       WOWWWWWWWWWWWWW YAYYYYY
@@ -290,6 +249,7 @@ button:hover {
     </div>
   </div>
 </div>
+
 <!-- Love notes -->
 <div class="notes">
   <div class="envelope" onclick="openNote(1)"></div>
@@ -301,10 +261,18 @@ button:hover {
 <div id="overlay" class="overlay" onclick="closeNote()">
   <div id="noteText" class="note"></div>
 </div>
+
 <script>
+const notes = {
+  1: "To much more Goodnightos kolstapos and hugs",
+  2: "היי אני מקס וזאת ליאל, ביחד אנחנו.... מקס וליאלללללל",
+  3: "I love you."
+};
+
 function sayYes() {
   document.getElementById("yesMessage").style.display = "block";
   createHearts();
+  createConfetti();
 }
 
 function createHearts() {
@@ -315,20 +283,48 @@ function createHearts() {
     heart.style.left = Math.random() * 100 + "vw";
     heart.style.animationDuration = (4 + Math.random() * 3) + "s";
     document.body.appendChild(heart);
-
     setTimeout(() => heart.remove(), 6000);
   }
 }
-const notes = {
-  1: "To much more Goodnightos kolstapos and hugs",
-  2: "היי אני מקס וזאת ליאל, ביחד אנחנו.... מקס וליאלללללל",
-  3: "I love you."
-};
 
+// Confetti effect
+function createConfetti() {
+  for (let i = 0; i < 50; i++) {
+    const confetti = document.createElement("div");
+    confetti.className = "confetti-piece";
+    confetti.style.left = Math.random() * window.innerWidth + "px";
+    confetti.style.backgroundColor = `hsl(${Math.random()*360}, 70%, 60%)`;
+    document.body.appendChild(confetti);
+    setTimeout(() => confetti.remove(), 3000);
+  }
+}
+
+// Love letter typewriter
+function openLetter() {
+  const heart = document.querySelector(".heart-button");
+  const hint = document.getElementById("clickHint");
+  const textEl = document.getElementById("letterText");
+  const message = "Each moment with you feels like a dream come true. I love everything about you. Your smile, your laugh, your smell, your touch, your hair, your eyes, your voice and I could go on. Thank you for always sticking by my side. I can't wait to make more memories together. I hope you will choose me to be your Valentine :)";
+  
+  heart.classList.add("open");
+  hint.style.display = "none";
+
+  setTimeout(() => {
+    heart.style.display = "none";
+    textEl.style.display = "block";
+    let i = 0;
+    const interval = setInterval(() => {
+      textEl.innerHTML += message[i];
+      i++;
+      if (i >= message.length) clearInterval(interval);
+    }, 30);
+  }, 400);
+}
+
+// Envelopes
 function openNote(number) {
   const envelope = event.currentTarget;
   envelope.classList.add("open");
-
   document.getElementById("noteText").innerText = notes[number];
   document.getElementById("overlay").style.display = "flex";
 }
@@ -336,30 +332,23 @@ function openNote(number) {
 function closeNote() {
   document.getElementById("overlay").style.display = "none";
 }
-function openLetter() {
-  const heart = document.querySelector(".heart-button");
-  const text = document.getElementById("letterText");
 
-  heart.classList.add("open");
-
-  setTimeout(() => {
-    heart.style.display = "none";
-    text.style.display = "block";
-  }, 400);
+// Image notes
+function showImageNote(msg) {
+  alert(msg);
 }
-function openLetter() {
-  const heart = document.querySelector(".heart-button");
-  const text = document.getElementById("letterText");
-  const hint = document.getElementById("clickHint");
 
-  heart.classList.add("open");
-  hint.style.display = "none";
-
-  setTimeout(() => {
-    heart.style.display = "none";
-    text.style.display = "block";
-  }, 400);
-}
+// Floating hearts follow mouse
+document.addEventListener("mousemove", (e) => {
+  const heart = document.createElement("div");
+  heart.className = "floating-heart";
+  heart.innerText = "💖";
+  heart.style.left = e.clientX + Math.random()*20 - 10 + "px";
+  heart.style.top = e.clientY + Math.random()*20 - 10 + "px";
+  heart.style.fontSize = 12 + Math.random()*12 + "px";
+  document.body.appendChild(heart);
+  setTimeout(() => heart.remove(), 2000);
+});
 </script>
 
 </body>
